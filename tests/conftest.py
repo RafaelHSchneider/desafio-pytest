@@ -98,3 +98,35 @@ def segundo_usuario():
     requests.delete(
         f"{BASE_URL}/usuarios/{usuario['_id']}"
     )
+
+@pytest.fixture
+def produtos_response():
+    return requests.get(f"{BASE_URL}/produtos")
+
+import uuid
+
+@pytest.fixture
+def produto_payload():
+    return {
+        "nome": f"Produto Teste {uuid.uuid4().hex[:8]}",
+        "preco": 100,
+        "descricao": "Produto para testes",
+        "quantidade": 10
+    }
+
+@pytest.fixture
+def produto_cadastrado(token_admin, produto_payload):
+    response = requests.post(
+        f"{BASE_URL}/produtos",
+        json=produto_payload,
+        headers={"Authorization": token_admin}
+    )
+
+    produto = response.json()
+
+    yield produto, produto_payload
+
+    requests.delete(
+        f"{BASE_URL}/produtos/{produto['_id']}",
+        headers={"Authorization": token_admin}
+    )
