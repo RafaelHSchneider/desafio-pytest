@@ -59,3 +59,20 @@ def usuario_por_id_response(usuario_existente):
     return requests.get(
         f"{BASE_URL}/usuarios/{usuario['_id']}"
     )
+
+@pytest.fixture
+def excluir_usuario_response(usuario_existente):
+    usuario, _ = usuario_existente
+
+    return requests.delete(
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
+    )
+
+@pytest.fixture
+def usuario_update_payload():
+    return {
+        "nome": "Usuário Atualizado",
+        "email": f"update_{uuid.uuid4().hex[:8]}@qa.com.br",
+        "password": "123456",
+        "administrador": "false"
+    }
