@@ -103,30 +103,117 @@ def segundo_usuario():
 def produtos_response():
     return requests.get(f"{BASE_URL}/produtos")
 
-import uuid
+
+@pytest.fixture
+def admin_payload():
+    return {
+        "nome": "Administrador Teste",
+        "email": f"admin_{uuid.uuid4().hex[:8]}@qa.com.br",
+        "password": "123456",
+        "administrador": "true"
+    }
+
+
+@pytest.fixture
+def admin_usuario(admin_payload):
+    response = requests.post(
+        f"{BASE_URL}/usuarios",
+        json=admin_payload
+    )
+
+    usuario = response.json()
+
+    yield usuario, admin_payload
+
+    requests.delete(
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
+    )
+
+
+@pytest.fixture
+def token_admin(admin_usuario):
+    _, payload = admin_usuario
+
+    response = requests.post(
+        f"{BASE_URL}/login",
+        json={
+            "email": payload["email"],
+            "password": payload["password"]
+        }
+    )
+
+    return response.json()["authorization"]
 
 @pytest.fixture
 def produto_payload():
     return {
-        "nome": f"Produto Teste {uuid.uuid4().hex[:8]}",
+        "nome": f"Produto {uuid.uuid4().hex[:8]}",
         "preco": 100,
         "descricao": "Produto para testes",
         "quantidade": 10
     }
 
 @pytest.fixture
-def produto_cadastrado(token_admin, produto_payload):
+def produto_cadastrado(
+    token_admin,
+    produto_payload
+):
     response = requests.post(
         f"{BASE_URL}/produtos",
         json=produto_payload,
-        headers={"Authorization": token_admin}
+        headers={
+            "Authorization": token_admin
+        }
     )
 
-    produto = response.json()
+    body = response.json()
 
-    yield produto, produto_payload
+    yield response, produto_payload
+
+    if response.status_code == 201:
+        requests.delete(
+            f"{BASE_URL}/produtos/{body['_id']}",
+            headers={
+                "Authorization": token_admin
+            }
+        )
+        
+@pytest.fixture
+def usuario_comum_payload():
+    return {
+        "nome": "Usuario Comum",
+        "email": f"user_{uuid.uuid4().hex[:8]}@qa.com.br",
+        "password": "123456",
+        "administrador": "false"
+    }
+
+
+@pytest.fixture
+def usuario_comum(usuario_comum_payload):
+    response = requests.post(
+        f"{BASE_URL}/usuarios",
+        json=usuario_comum_payload
+    )
+
+    usuario = response.json()
+
+    yield usuario, usuario_comum_payload
 
     requests.delete(
-        f"{BASE_URL}/produtos/{produto['_id']}",
-        headers={"Authorization": token_admin}
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
     )
+
+
+@pytest.fixture
+def token_usuario(usuario_comum):
+    _, payload = usuario_comum
+
+    response = requests.post(
+        f"{BASE_URL}/login",
+        json={
+            "email": payload["email"],
+            "password": payload["password"]
+        }
+    )
+
+    return response.json()["authorization"]
