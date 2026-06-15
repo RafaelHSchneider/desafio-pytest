@@ -76,3 +76,25 @@ def usuario_update_payload():
         "password": "123456",
         "administrador": "false"
     }
+
+@pytest.fixture
+def segundo_usuario():
+    payload = {
+        "nome": "Segundo Usuario",
+        "email": f"segundo_{uuid.uuid4().hex[:8]}@qa.com.br",
+        "password": "123456",
+        "administrador": "true"
+    }
+
+    response = requests.post(
+        f"{BASE_URL}/usuarios",
+        json=payload
+    )
+
+    usuario = response.json()
+
+    yield usuario
+
+    requests.delete(
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
+    )
