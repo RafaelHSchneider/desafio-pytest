@@ -1,0 +1,51 @@
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Arquivos de distribuição
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Arquivos do pytest
+.pytest_cache/
+
+# Cobertura de testes
+.coverage
+htmlcov/
+coverage.xml
+
+# Arquivos do VS Code
+.vscode/
+
+# Arquivos do PyCharm
+.idea/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# Arquivos de ambiente
+.env
+
+# Arquivos temporários
+*.tmp
+*.temp
