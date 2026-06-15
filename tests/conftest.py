@@ -51,3 +51,11 @@ def usuario_existente(usuario_payload):
     requests.delete(
         f"{BASE_URL}/usuarios/{usuario['_id']}"
     )
+
+@pytest.fixture
+def usuario_por_id_response(usuario_existente):
+    usuario, _ = usuario_existente
+
+    return requests.get(
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
+    )
