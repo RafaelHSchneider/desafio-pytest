@@ -217,3 +217,39 @@ def token_usuario(usuario_comum):
     )
 
     return response.json()["authorization"]
+
+@pytest.fixture
+def produto_existente(
+    token_admin,
+    produto_payload
+):
+    response = requests.post(
+        f"{BASE_URL}/produtos",
+        json=produto_payload,
+        headers={
+            "Authorization": token_admin
+        }
+    )
+
+    produto = response.json()
+
+    yield produto, produto_payload
+
+    if response.status_code == 201:
+        requests.delete(
+            f"{BASE_URL}/produtos/{produto['_id']}",
+            headers={
+                "Authorization": token_admin
+            }
+        )
+
+@pytest.fixture
+def excluir_produto_response(produto_existente, token_admin):
+    produto, _ = produto_existente
+
+    return requests.delete(
+        f"{BASE_URL}/produtos/{produto['_id']}",
+        headers={
+            "Authorization": token_admin
+        }
+    )
