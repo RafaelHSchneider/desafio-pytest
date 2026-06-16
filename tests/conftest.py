@@ -253,3 +253,31 @@ def excluir_produto_response(produto_existente, token_admin):
             "Authorization": token_admin
         }
     )
+
+@pytest.fixture
+def produto_update_payload():
+    return {
+        "nome": f"Produto Atualizado {uuid.uuid4().hex[:8]}",
+        "preco": 250,
+        "descricao": "Produto atualizado para testes",
+        "quantidade": 20
+    }
+
+@pytest.fixture
+def login_payload(usuario_comum_payload):
+    return {
+        "email": usuario_comum_payload["email"],
+        "password": usuario_comum_payload["password"]
+    }
+
+@pytest.fixture
+def login_response(usuario_comum, login_payload):
+    _, payload = usuario_comum
+    
+    return requests.post(
+        f"{BASE_URL}/login",
+        json={
+            "email": payload["email"],
+            "password": payload["password"]
+        }
+    )
