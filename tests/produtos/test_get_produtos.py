@@ -1,3 +1,6 @@
+import pytest
+from tests.schemas import SchemaValidator, produtos_list_schema, produto_schema
+
 def test_listar_produtos_status_code(produtos_response):
     assert produtos_response.status_code == 200
 
@@ -6,6 +9,10 @@ def test_listar_produtos_retorna_json(produtos_response):
         "application/json"
         in produtos_response.headers["Content-Type"]
     )
+
+def test_listar_produtos_valida_schema(produtos_response):
+    """Valida response contra JSON Schema"""
+    SchemaValidator.validate_response(produtos_response, produtos_list_schema)
 
 def test_listar_produtos_retorna_campos_principais(
     produtos_response

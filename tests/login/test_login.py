@@ -1,5 +1,6 @@
 import requests
 import uuid
+from tests.schemas import SchemaValidator, login_sucesso_schema
 
 BASE_URL = "https://compassuol.serverest.dev"
 
@@ -24,6 +25,10 @@ def test_login_retorna_token(login_response):
     assert "authorization" in body
     assert isinstance(body["authorization"], str)
     assert body["authorization"].startswith("Bearer ")
+
+def test_login_valida_schema(login_response):
+    """Valida response contra JSON Schema"""
+    SchemaValidator.validate_response(login_response, login_sucesso_schema)
 
 def test_login_com_email_invalido():
     response = requests.post(
@@ -95,7 +100,6 @@ def test_login_com_campos_vazios():
 
     body = response.json()
 
-    # Valida que há erro de validação
     assert body.get("message") or body.get("email") or body.get("password")
 
 def test_login_com_email_vazio():
@@ -111,7 +115,6 @@ def test_login_com_email_vazio():
 
     body = response.json()
 
-    # Valida que há erro de validação
     assert body.get("message") or body.get("email")
 
 def test_login_com_senha_vazia(usuario_comum):

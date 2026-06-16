@@ -2,6 +2,7 @@ import requests
 import pytest
 import random
 import string
+from tests.schemas import SchemaValidator, produto_schema
 
 BASE_URL = "https://compassuol.serverest.dev"
 
@@ -33,6 +34,11 @@ def test_buscar_produto_por_id_retorna_json(
         in produto_por_id_response.headers["Content-Type"]
     )
 
+def test_buscar_produto_por_id_valida_schema(
+    produto_por_id_response
+):
+    """Valida response contra JSON Schema"""
+    SchemaValidator.validate_response(produto_por_id_response, produto_schema)
 
 def test_buscar_produto_por_id_retorna_campos_principais(
     produto_por_id_response

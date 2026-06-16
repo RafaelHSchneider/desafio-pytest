@@ -1,4 +1,6 @@
 import requests
+from tests.schemas import SchemaValidator, produto_criado_schema
+
 BASE_URL = "https://compassuol.serverest.dev"
 
 def test_cadastrar_produto_status_code(
@@ -19,6 +21,14 @@ def test_cadastrar_produto_retorna_mensagem(
         body["message"]
         == "Cadastro realizado com sucesso"
     )
+
+def test_cadastrar_produto_valida_schema(
+    produto_cadastrado
+):
+    """Valida response contra JSON Schema"""
+    response, _ = produto_cadastrado
+    
+    SchemaValidator.validate_response(response, produto_criado_schema)
 
 def test_cadastrar_produto_retorna_id(
     produto_cadastrado
