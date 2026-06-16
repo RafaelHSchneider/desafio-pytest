@@ -8,6 +8,12 @@ BASE_URL = "https://compassuol.serverest.dev"
 
 
 @pytest.fixture
+def usuarios_response():
+    """GET /usuarios - lista de todos os usuários"""
+    return requests.get(f"{BASE_URL}/usuarios")
+
+
+@pytest.fixture
 def usuario_payload():
     return {
         "nome": "Fulano da Silva",
@@ -15,6 +21,27 @@ def usuario_payload():
         "password": "teste",
         "administrador": "true"
     }
+
+
+@pytest.fixture
+def usuario_cadastrado(usuario_payload):
+    """Cria usuário e retorna response"""
+    response = requests.post(
+        f"{BASE_URL}/usuarios",
+        json=usuario_payload
+    )
+
+    body = response.json()
+
+    yield response
+
+    # Teardown
+    if response.status_code == 201:
+        usuario_id = body["_id"]
+
+        requests.delete(
+            f"{BASE_URL}/usuarios/{usuario_id}"
+        )
 
 
 @pytest.fixture
@@ -82,3 +109,4 @@ def segundo_usuario():
     requests.delete(
         f"{BASE_URL}/usuarios/{usuario['_id']}"
     )
+

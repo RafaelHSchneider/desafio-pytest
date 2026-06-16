@@ -52,6 +52,34 @@ def token_admin(admin_usuario):
 
 
 @pytest.fixture
+def usuario_comum_payload():
+    """Payload para criar usuário comum"""
+    return {
+        "nome": "Usuario Comum",
+        "email": f"user_{uuid.uuid4().hex[:8]}@qa.com.br",
+        "password": "123456",
+        "administrador": "false"
+    }
+
+
+@pytest.fixture
+def usuario_comum(usuario_comum_payload):
+    """Cria usuário comum para testes"""
+    response = requests.post(
+        f"{BASE_URL}/usuarios",
+        json=usuario_comum_payload
+    )
+
+    usuario = response.json()
+
+    yield usuario, usuario_comum_payload
+
+    requests.delete(
+        f"{BASE_URL}/usuarios/{usuario['_id']}"
+    )
+
+
+@pytest.fixture
 def token_usuario(usuario_comum):
     """Token de autenticação para usuário comum"""
     _, payload = usuario_comum
@@ -65,3 +93,6 @@ def token_usuario(usuario_comum):
     )
 
     return response.json()["authorization"]
+
+
+
